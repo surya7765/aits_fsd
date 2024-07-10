@@ -16,13 +16,13 @@ const findById = async (id) => {
   try {
     const client = await pool.getConnection();
     const result = await client.query(QUERY, [id]);
-    return result;
+    return result[0];
   } catch (error) {
     console.error("Error while fetching data from DB", error);
   }
 };
 
-const createRecipe = async (name, ingredients, instructions, image_url) => {
+const create = async (name, ingredients, instructions, image_url) => {
   const createTableQuery = `
         CREATE TABLE IF NOT EXISTS recipe (
         id INT AUTO_INCREMENT PRIMARY KEY,
@@ -32,13 +32,6 @@ const createRecipe = async (name, ingredients, instructions, image_url) => {
         image_url VARCHAR(255),
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )`;
-  pool.query(createTableQuery, (err, result) => {
-    if (err) {
-      console.error("Error creating table:", err.stack);
-      return;
-    }
-    console.log("Table created successfully:", result);
-  });
 
   const QUERY = `INSERT INTO recipe(name, ingredients, instructions, image_url) VALUES (?, ?, ?, ?)`;
 
@@ -56,8 +49,19 @@ const createRecipe = async (name, ingredients, instructions, image_url) => {
   }
 };
 
-const updateRecipe = async () => {};
+const update = async () => {
+    
+};
 
-const deleteRecipe = async () => {};
+const deleteRow = async (id) => {
+    const QUERY = "DELETE FROM recipe WHERE id = ?";
+    try {
+        const client = await pool.getConnection();
+        const result = await client.query(QUERY, [id]);
+        return result[0];
+      } catch (error) {
+        console.error("Error while deleting data from DB", error);
+      }
+};
 
-export { find, findById, createRecipe, updateRecipe, deleteRecipe };
+export { find, findById, create, update, deleteRow };
